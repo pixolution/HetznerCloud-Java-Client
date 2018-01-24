@@ -48,6 +48,11 @@ public class Server
 	{
 		return created;
 	}
+	
+	public Network getNetwork() 
+	{
+		return network;
+	}
 
 	public ServerType getServerType()
 	{

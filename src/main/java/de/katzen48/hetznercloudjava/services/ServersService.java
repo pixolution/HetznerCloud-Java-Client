@@ -1,9 +1,10 @@
 package de.katzen48.hetznercloudjava.services;
 
-import java.util.List;
-
-import de.katzen48.hetznercloudjava.reponses.ServersResponse;
-import de.katzen48.hetznercloudjava.resources.Server;
+import de.katzen48.hetznercloudjava.reponses.server.CreateServerResponse;
+import de.katzen48.hetznercloudjava.reponses.server.DeleteServerResponse;
+import de.katzen48.hetznercloudjava.reponses.server.GetServerResponse;
+import de.katzen48.hetznercloudjava.reponses.server.GetServersResponse;
+import de.katzen48.hetznercloudjava.requests.CreateServerRequest;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -18,25 +19,25 @@ public interface ServersService
 {
 	@Headers({ "Accept: application/json" })
 	@GET("servers")
-	public Call<ServersResponse> getAllServers();
+	public Call<GetServersResponse> getAllServers();
 	
 	@Headers({ "Accept: application/json" })
 	@GET("servers?{name}")
-	public Call<List<Server>> getServersByName(@Path("name") String name);
+	public Call<GetServersResponse> getServersByName(@Path("name") String name);
 	
 	@Headers({ "Accept: application/json" })
 	@GET("servers/{id}")
-	public Call<Server> getServer(@Path("id") int id);
+	public Call<GetServerResponse> getServer(@Path("id") int id);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers")
-	public Call<Server> createServer(@Body Server server);
+	public Call<CreateServerResponse> createServer(@Body CreateServerRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@PUT("servers/{id}")
-	public Call<Server> changeName(@Path("id") int id, @Query("name") String name);
+	public Call<GetServerResponse> changeName(@Path("id") int id, @Query("name") String name);
 	
 	@Headers({ "Accept: application/json" })
 	@DELETE("servers/{id}")
-	public Call<?> delete(@Path("id") int id);
+	public Call<DeleteServerResponse> delete(@Path("id") int id);
 }

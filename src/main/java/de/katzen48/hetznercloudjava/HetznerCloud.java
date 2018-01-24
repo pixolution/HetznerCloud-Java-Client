@@ -1,13 +1,19 @@
 package de.katzen48.hetznercloudjava;
 
 import java.io.IOException;
-import java.util.List;
 
 import de.katzen48.hetznercloudjava.exceptions.APIException;
 import de.katzen48.hetznercloudjava.exceptions.BadRequestException;
 import de.katzen48.hetznercloudjava.exceptions.RateLimitException;
-import de.katzen48.hetznercloudjava.reponses.ServersResponse;
+import de.katzen48.hetznercloudjava.reponses.pricing.GetPricingResponse;
+import de.katzen48.hetznercloudjava.reponses.server.CreateServerResponse;
+import de.katzen48.hetznercloudjava.reponses.server.DeleteServerResponse;
+import de.katzen48.hetznercloudjava.reponses.server.GetServerResponse;
+import de.katzen48.hetznercloudjava.reponses.server.GetServersResponse;
+import de.katzen48.hetznercloudjava.requests.CreateServerRequest;
+import de.katzen48.hetznercloudjava.resources.Pricing;
 import de.katzen48.hetznercloudjava.resources.Server;
+import de.katzen48.hetznercloudjava.services.PricingService;
 import de.katzen48.hetznercloudjava.services.ServersService;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -44,7 +50,85 @@ public class HetznerCloud
 	{
 		try 
 		{
-			return ((Response<ServersResponse>) doRequest(retrofit.create(ServersService.class).getAllServers())).body().getServers();
+			return ((Response<GetServersResponse>) doRequest(retrofit.create(ServersService.class).getAllServers())).body().getServers();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Server[] getServers(String name)
+	{
+		try 
+		{
+			return ((Response<GetServersResponse>) doRequest(retrofit.create(ServersService.class).getServersByName(name))).body().getServers();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Server getServer(int id)
+	{
+		try 
+		{
+			return ((Response<GetServerResponse>) doRequest(retrofit.create(ServersService.class).getServer(id))).body().getServer();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public CreateServerResponse createServer(CreateServerRequest request)
+	{
+		try 
+		{
+			return ((Response<CreateServerResponse>) doRequest(retrofit.create(ServersService.class).createServer(request))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Server changeServerName(int id, String name)
+	{
+		try 
+		{
+			return ((Response<GetServerResponse>) doRequest(retrofit.create(ServersService.class).changeName(id, name))).body().getServer();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public DeleteServerResponse deleteServer(int id)
+	{
+		try 
+		{
+			return ((Response<DeleteServerResponse>) doRequest(retrofit.create(ServersService.class).getServer(id))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Pricing getPricing()
+	{
+		try 
+		{
+			return ((Response<GetPricingResponse>) doRequest(retrofit.create(PricingService.class).getAll())).body().getPricing();
 		} 
 		catch (APIException e) 
 		{
