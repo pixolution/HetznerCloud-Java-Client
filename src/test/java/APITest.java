@@ -15,7 +15,8 @@ public class APITest
 {
 	private String token = "FooBar";
 	
-    @Test public void testAPIConnection() 
+    @Test 
+    public void testAPIConnection() 
     {
         HetznerCloud cloud = new HetznerCloud.Builder().withToken(token).build();
         assertNotNull("getServers() should return some List", cloud.getServers());
@@ -23,7 +24,8 @@ public class APITest
         System.out.flush();
     }
     
-    @Test public void testPricing() 
+    @Test 
+    public void testPricing() 
     {
         HetznerCloud cloud = new HetznerCloud.Builder().withToken(token).build();
         assertNotNull("getPricing() should return some Value", cloud.getPricing());
