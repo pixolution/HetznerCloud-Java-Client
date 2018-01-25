@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 
 import com.google.gson.annotations.SerializedName;
 
+import de.katzen48.hetznercloudjava.HetznerCloud;
+import de.katzen48.hetznercloudjava.resources.Image.Type;
+
 public class Server 
 {
 	private int id;
@@ -29,6 +32,144 @@ public class Server
 	@SerializedName("included_traffic")
 	private long includedTraffic;
 
+	
+	public boolean changeName(HetznerCloud cloud, String name)
+	{
+		Server server = cloud.changeServerName(id, name);
+		if(!server.getName().equals(name))
+		{
+			name = server.getName();
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean delete(HetznerCloud cloud)
+	{
+		return cloud.deleteServer(id).getAction().getError() == null;
+	}
+	
+	public ServerAction[] getActions(HetznerCloud cloud)
+	{
+		return cloud.getServerActions(id);
+	}
+	
+	public ServerAction getServerAction(HetznerCloud cloud, int id)
+	{
+		return cloud.getServerAction(this.id, id);
+	}
+	
+	public boolean poweron(HetznerCloud cloud)
+	{
+		return cloud.poweronServer(id).getError() == null;
+	}
+	
+	public boolean reboot(HetznerCloud cloud)
+	{
+		return cloud.rebootServer(id).getError() == null;
+	}
+	
+	public boolean reset(HetznerCloud cloud)
+	{
+		return cloud.resetServer(id).getError() == null;
+	}
+
+	public boolean shutdown(HetznerCloud cloud)
+	{
+		return cloud.shutdownServer(id).getError() == null;
+	}
+	
+	public boolean poweroff(HetznerCloud cloud)
+	{
+		return cloud.poweroffServer(id).getError() == null;
+	}
+	
+	public String resetServerPassword(HetznerCloud cloud)
+	{
+		return cloud.resetServerPassword(id).getRootPassword();
+	}
+	
+	public String enableRescueMode(HetznerCloud cloud)
+	{
+		return cloud.enableServerRescueMode(id).getRootPassword();
+	}
+	
+	public String enableRescueMode(HetznerCloud cloud, String osType)
+	{
+		return cloud.enableServerRescueMode(id, osType).getRootPassword();
+	}
+	
+	public String enableRescueMode(HetznerCloud cloud, int[] sshKeys)
+	{
+		return cloud.enableServerRescueMode(id, sshKeys).getRootPassword();
+	}
+	
+	public String enableRescueMode(HetznerCloud cloud, String osType, int[] sshKeys)
+	{
+		return cloud.enableServerRescueMode(id, osType, sshKeys).getRootPassword();
+	}
+	
+	public Image createImage(HetznerCloud cloud)
+	{
+		return cloud.createServerImage(id).getImage();
+	}
+	
+	public Image createImage(HetznerCloud cloud, String description)
+	{
+		return cloud.createServerImage(id, description).getImage();
+	}
+	
+	public Image createImage(HetznerCloud cloud, Type type)
+	{
+		return cloud.createServerImage(id, type).getImage();
+	}
+	
+	public String rebuild(HetznerCloud cloud, int imageId)
+	{
+		return cloud.rebuildServer(id, imageId).getRootPassword();
+	}
+	
+	public boolean changeType(HetznerCloud cloud, String type)
+	{
+		return cloud.changeServerType(id, type).getAction().getError() == null;
+	}
+	
+	public boolean changeType(HetznerCloud cloud, String type, boolean upgradeDisk)
+	{
+		return cloud.changeServerType(id, type, upgradeDisk).getAction().getError() == null;
+	}
+	
+	public boolean enableBackup(HetznerCloud cloud)
+	{
+		return cloud.enableBackup(id).getAction().getError() == null;
+	}
+	
+	public boolean enableBackup(HetznerCloud cloud, String backupWindow)
+	{
+		return cloud.enableBackup(id, backupWindow).getAction().getError() == null;
+	}
+	
+	public boolean disableBackup(HetznerCloud cloud)
+	{
+		return cloud.disableBackup(id).getAction().getError() == null;
+	}
+	
+	public boolean attachIso(HetznerCloud cloud, int isoId)
+	{
+		return cloud.attachIsoToServer(id, isoId).getAction().getError() == null;
+	}
+	
+	public boolean detachIso(HetznerCloud cloud)
+	{
+		return cloud.detachIsoFromServer(id).getAction().getError() == null;
+	}
+	
+	public boolean changeDnsPtr(HetznerCloud cloud, String ip, String dnsPtr)
+	{
+		return cloud.changeServerDnsPtr(id, ip, dnsPtr).getAction().getError() == null;
+	}
+	
+	
 	public int getId() 
 	{
 		return id;

@@ -19,7 +19,7 @@ public interface ServersService
 {
 	@Headers({ "Accept: application/json" })
 	@GET("servers")
-	public Call<GetServersResponse> getAllServers();
+	public Call<GetServersResponse> getServers();
 	
 	@Headers({ "Accept: application/json" })
 	@GET("servers?{name}")

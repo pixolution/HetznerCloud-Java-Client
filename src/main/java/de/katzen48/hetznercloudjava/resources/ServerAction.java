@@ -1,9 +1,6 @@
-package de.katzen48.hetznercloudjava.actions;
+package de.katzen48.hetznercloudjava.resources;
 
 import java.sql.Timestamp;
-
-import de.katzen48.hetznercloudjava.resources.RequestError;
-import de.katzen48.hetznercloudjava.resources.Resource;
 
 public class ServerAction 
 {

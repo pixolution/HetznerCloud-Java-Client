@@ -7,7 +7,7 @@ import de.katzen48.hetznercloudjava.reponses.server.actions.ResetPasswordRespons
 import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionResponse;
 import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionsResponse;
 import de.katzen48.hetznercloudjava.resources.Image.Type;
-import de.katzen48.hetznercloudjava.resources.Server.Status;
+import de.katzen48.hetznercloudjava.resources.ServerAction.Status;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
@@ -19,7 +19,7 @@ public interface ServerActionsService
 {
 	@Headers({ "Accept: application/json" })
 	@GET("servers/{id}/actions")
-	public Call<ServerActionsResponse> getAllServerActions(@Path("id") int id);
+	public Call<ServerActionsResponse> getServerActions(@Path("id") int id);
 	
 	@Headers({ "Accept: application/json" })
 	@GET("servers/{id}/actions?status={status}")
@@ -31,7 +31,7 @@ public interface ServerActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@GET("servers/{id}/actions?status={status}&sort={sort}")
-	public Call<ServerActionsResponse> getSortedServerActionsByStatusA(@Path("id") int id, @Path("status") Status status, @Path("sort") String sortBy);
+	public Call<ServerActionsResponse> getSortedServerActionsByStatus(@Path("id") int id, @Path("status") Status status, @Path("sort") String sortBy);
 	
 	@Headers({ "Accept: application/json" })
 	@GET("servers/{id}/actions/{action_id}")
@@ -39,7 +39,7 @@ public interface ServerActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/poweron")
-	public Call<ServerActionResponse> powerOnServer(@Path("id") int id);
+	public Call<ServerActionResponse> poweronServer(@Path("id") int id);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/reboot")
@@ -95,7 +95,7 @@ public interface ServerActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/rebuild")
-	public Call<RebuildServerResponse> rebuildServer(@Path("id") int id, @Query("image") String image);
+	public Call<RebuildServerResponse> rebuildServer(@Path("id") int id, @Query("image") int image);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/change_type")
@@ -119,7 +119,7 @@ public interface ServerActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/attach_iso")
-	public Call<ServerActionResponse> attachIso(@Path("id") int id, @Query("iso") String iso);
+	public Call<ServerActionResponse> attachIso(@Path("id") int id, @Query("iso") int iso);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/detach_iso")

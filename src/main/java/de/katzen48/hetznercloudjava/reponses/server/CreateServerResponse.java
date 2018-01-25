@@ -2,8 +2,8 @@ package de.katzen48.hetznercloudjava.reponses.server;
 
 import com.google.gson.annotations.SerializedName;
 
-import de.katzen48.hetznercloudjava.actions.ServerAction;
 import de.katzen48.hetznercloudjava.resources.Server;
+import de.katzen48.hetznercloudjava.resources.ServerAction;
 
 public class CreateServerResponse 
 {

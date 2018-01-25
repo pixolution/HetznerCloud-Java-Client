@@ -5,15 +5,28 @@ import java.io.IOException;
 import de.katzen48.hetznercloudjava.exceptions.APIException;
 import de.katzen48.hetznercloudjava.exceptions.BadRequestException;
 import de.katzen48.hetznercloudjava.exceptions.RateLimitException;
+import de.katzen48.hetznercloudjava.exceptions.UnauthorizedEndpointException;
+import de.katzen48.hetznercloudjava.reponses.images.GetImagesResponse;
 import de.katzen48.hetznercloudjava.reponses.pricing.GetPricingResponse;
 import de.katzen48.hetznercloudjava.reponses.server.CreateServerResponse;
 import de.katzen48.hetznercloudjava.reponses.server.DeleteServerResponse;
 import de.katzen48.hetznercloudjava.reponses.server.GetServerResponse;
 import de.katzen48.hetznercloudjava.reponses.server.GetServersResponse;
+import de.katzen48.hetznercloudjava.reponses.server.actions.CreateImageResponse;
+import de.katzen48.hetznercloudjava.reponses.server.actions.EnableRescueModeResponse;
+import de.katzen48.hetznercloudjava.reponses.server.actions.RebuildServerResponse;
+import de.katzen48.hetznercloudjava.reponses.server.actions.ResetPasswordResponse;
+import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionResponse;
+import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionsResponse;
 import de.katzen48.hetznercloudjava.requests.CreateServerRequest;
+import de.katzen48.hetznercloudjava.resources.Image;
+import de.katzen48.hetznercloudjava.resources.Image.Type;
 import de.katzen48.hetznercloudjava.resources.Pricing;
 import de.katzen48.hetznercloudjava.resources.Server;
+import de.katzen48.hetznercloudjava.resources.ServerAction;
+import de.katzen48.hetznercloudjava.services.ImagesService;
 import de.katzen48.hetznercloudjava.services.PricingService;
+import de.katzen48.hetznercloudjava.services.ServerActionsService;
 import de.katzen48.hetznercloudjava.services.ServersService;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -50,7 +63,7 @@ public class HetznerCloud
 	{
 		try 
 		{
-			return ((Response<GetServersResponse>) doRequest(retrofit.create(ServersService.class).getAllServers())).body().getServers();
+			return ((Response<GetServersResponse>) doRequest(retrofit.create(ServersService.class).getServers())).body().getServers();
 		} 
 		catch (APIException e) 
 		{
@@ -115,7 +128,371 @@ public class HetznerCloud
 	{
 		try 
 		{
-			return ((Response<DeleteServerResponse>) doRequest(retrofit.create(ServersService.class).getServer(id))).body();
+			return ((Response<DeleteServerResponse>) doRequest(retrofit.create(ServersService.class).delete(id))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction[] getServerActions(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionsResponse>) doRequest(retrofit.create(ServerActionsService.class).getServerActions(serverId))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction[] getSortedServerActions(int serverId, String sorting)
+	{
+		try 
+		{
+			return ((Response<ServerActionsResponse>) doRequest(retrofit.create(ServerActionsService.class).getSortedServerActions(serverId, sorting))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction[] getServerActionsByStatus(int serverId, ServerAction.Status status)
+	{
+		try 
+		{
+			return ((Response<ServerActionsResponse>) doRequest(retrofit.create(ServerActionsService.class).getServerActionsByStatus(serverId, status))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction[] getSortedServerActionsByStatus(int serverId, String sorting, ServerAction.Status status)
+	{
+		try 
+		{
+			return ((Response<ServerActionsResponse>) doRequest(retrofit.create(ServerActionsService.class).getSortedServerActionsByStatus(serverId, status, sorting))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction getServerAction(int serverId, int actionId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).getServerAction(serverId, actionId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction poweronServer(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).poweronServer(serverId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction rebootServer(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).rebootServer(serverId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction resetServer(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).resetServer(serverId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction shutdownServer(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).shutdownServer(serverId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerAction poweroffServer(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).poweroffServer(serverId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ResetPasswordResponse resetServerPassword(int serverId)
+	{
+		try 
+		{
+			return ((Response<ResetPasswordResponse>) doRequest(retrofit.create(ServerActionsService.class).resetPassword(serverId))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public EnableRescueModeResponse enableServerRescueMode(int serverId)
+	{
+		try 
+		{
+			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class).enableRescueMode(serverId))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public EnableRescueModeResponse enableServerRescueMode(int serverId, String osType)
+	{
+		try 
+		{
+			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class).enableRescueMode(serverId, osType))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public EnableRescueModeResponse enableServerRescueMode(int serverId, int[] sshKeys)
+	{
+		try 
+		{
+			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class).enableRescueMode(serverId, sshKeys))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public EnableRescueModeResponse enableServerRescueMode(int serverId, String osType, int[] sshKeys)
+	{
+		try 
+		{
+			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class).enableRescueMode(serverId, osType, sshKeys))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public CreateImageResponse createServerImage(int serverId)
+	{
+		try 
+		{
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public CreateImageResponse createServerImage(int serverId, String description)
+	{
+		try 
+		{
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId, description))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public CreateImageResponse createServerImage(int serverId, Type type)
+	{
+		try 
+		{
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId, type))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public RebuildServerResponse rebuildServer(int serverId, int imageId)
+	{
+		try 
+		{
+			return ((Response<RebuildServerResponse>) doRequest(retrofit.create(ServerActionsService.class).rebuildServer(serverId, imageId))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerActionResponse changeServerType(int serverId, String type)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).changeServerType(serverId, type))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerActionResponse changeServerType(int serverId, String type, boolean upgradeDisk)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).changeServerType(serverId, type, upgradeDisk))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerActionResponse enableBackup(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).enableBackup(serverId))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerActionResponse enableBackup(int serverId, String backupWindow)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).enableBackup(serverId, backupWindow))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerActionResponse disableBackup(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).disableBackup(serverId))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerActionResponse attachIsoToServer(int serverId, int iso)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).attachIso(serverId, iso))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerActionResponse detachIsoFromServer(int serverId)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).detachIso(serverId))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerActionResponse changeServerDnsPtr(int serverId, String ip, String dnsPtr)
+	{
+		try 
+		{
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).changeDnsPtr(serverId, ip, dnsPtr))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public CreateImageResponse createServerImage(int serverId, String description, Type type)
+	{
+		try 
+		{
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId, description, type))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -128,7 +505,20 @@ public class HetznerCloud
 	{
 		try 
 		{
-			return ((Response<GetPricingResponse>) doRequest(retrofit.create(PricingService.class).getAll())).body().getPricing();
+			return ((Response<GetPricingResponse>) doRequest(retrofit.create(PricingService.class).getPricing())).body().getPricing();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image[] getImages()
+	{
+		try 
+		{
+			return ((Response<GetImagesResponse>) doRequest(retrofit.create(ImagesService.class).getImages())).body().getImages();
 		} 
 		catch (APIException e) 
 		{
@@ -149,6 +539,8 @@ public class HetznerCloud
 				{
 				case 429:
 					throw new RateLimitException(Long.parseLong(response.headers().get("RateLimit-Reset")));
+				case 401:
+					throw new UnauthorizedEndpointException(call.request().url().url().toString());
 				default:
 					throw new BadRequestException(call.toString(), response.message());
 				}	

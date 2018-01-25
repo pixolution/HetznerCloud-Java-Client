@@ -7,7 +7,7 @@ public class Datacenter
 	private int id;
 	private String name;
 	private String description;
-	private DatacenterLocation location;
+	private Location location;
 	@SerializedName("server_types")
 	private ServerTypes serverTypes;
 	private int recommendation;
@@ -31,7 +31,7 @@ public class Datacenter
 	}
 
 
-	public DatacenterLocation getLocation() 
+	public Location getLocation() 
 	{
 		return location;
 	}

@@ -9,5 +9,5 @@ public interface PricingService
 {
 	@Headers({ "Accept: application/json" })
 	@GET("pricing")
-	public Call<GetPricingResponse> getAll();
+	public Call<GetPricingResponse> getPricing();
 }

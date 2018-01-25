@@ -10,7 +10,7 @@ public class ServerType
 	private int cores;
 	private long memory;
 	private long disk;
-	private Price price;
+	private Price[] prices;
 	@SerializedName("storage_type")
 	private StorageType storageType;
 	
@@ -44,9 +44,9 @@ public class ServerType
 		return disk;
 	}
 
-	public Price getPrice() 
+	public Price[] getPrices() 
 	{
-		return price;
+		return prices;
 	}
 
 	public StorageType getStorageType() 

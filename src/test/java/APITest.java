@@ -1,6 +1,7 @@
 import org.junit.Test;
 
 import de.katzen48.hetznercloudjava.HetznerCloud;
+import de.katzen48.hetznercloudjava.resources.Image;
 import de.katzen48.hetznercloudjava.resources.ServerType;
 
 import static org.junit.Assert.*;
@@ -32,6 +33,26 @@ public class APITest
         for(ServerType type : cloud.getPricing().getServerTypes())
         {
         	System.out.println(type.getName());
+            System.out.flush();
+            System.out.println(type.getCores());
+            System.out.flush();
+            System.out.println(type.getPrices()[0].getPriceMonthly().getNet());
+            System.out.flush();
+        }
+    }
+    
+    @Test 
+    public void testImages() 
+    {
+        HetznerCloud cloud = new HetznerCloud.Builder().withToken(token).build();
+        assertNotNull("getImages() should return some Value", cloud.getImages());
+        for(Image image : cloud.getImages())
+        {
+        	System.out.println(image.getName());
+            System.out.flush();
+            System.out.println(image.getOsFlavor());
+            System.out.flush();
+            System.out.println(image.getOsVersion());
             System.out.flush();
         }
     }
