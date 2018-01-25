@@ -7,7 +7,7 @@ import de.katzen48.hetznercloudjava.reponses.server.actions.ResetPasswordRespons
 import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionResponse;
 import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionsResponse;
 import de.katzen48.hetznercloudjava.resources.Image.Type;
-import de.katzen48.hetznercloudjava.resources.ServerAction.Status;
+import de.katzen48.hetznercloudjava.resources.ApiAction.Status;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;

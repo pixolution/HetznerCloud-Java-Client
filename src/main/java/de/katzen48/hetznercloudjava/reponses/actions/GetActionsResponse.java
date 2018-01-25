@@ -1,8 +1,8 @@
-package de.katzen48.hetznercloudjava.reponses.server.actions;
+package de.katzen48.hetznercloudjava.reponses.actions;
 
 import de.katzen48.hetznercloudjava.resources.ApiAction;
 
-public class ServerActionsResponse 
+public class GetActionsResponse 
 {
 	private ApiAction[] actions;
 

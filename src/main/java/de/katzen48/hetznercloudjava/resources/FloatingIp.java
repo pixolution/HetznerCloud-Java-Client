@@ -2,6 +2,8 @@ package de.katzen48.hetznercloudjava.resources;
 
 import com.google.gson.annotations.SerializedName;
 
+import de.katzen48.hetznercloudjava.HetznerCloud;
+
 public class FloatingIp 
 {
 	private int id;
@@ -14,6 +16,42 @@ public class FloatingIp
 	@SerializedName("home_location")
 	private Location homeLocation;
 	private boolean blocked;
+	
+	
+	public boolean changeDescription(HetznerCloud cloud, String description)
+	{
+		if(cloud.changeFloatingIpDescription(id, description).description.equals(this.description))
+		{
+			this.description = description;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean delete(HetznerCloud cloud)
+	{
+		return cloud.deleteFloatingIp(id);
+	}
+	
+	public ApiAction[] getActions(HetznerCloud cloud)
+	{
+		return cloud.getFloatingApiActions(id);
+	}
+	
+	public boolean assign(HetznerCloud cloud, int serverId)
+	{
+		return cloud.assignFloatingIpToServer(id, serverId).getError() == null;
+	}
+	
+	public boolean unassign(HetznerCloud cloud)
+	{
+		return cloud.unassignFloatingIp(id).getError() == null;
+	}
+	
+	public boolean changeDnsPtr(HetznerCloud cloud, String ip, String dnsPtr)
+	{
+		return cloud.changeFloatingIpDnsPtr(id, ip, dnsPtr).getError() == null;
+	}
 	
 	
 	public int getId() 

@@ -49,12 +49,12 @@ public class Server
 		return cloud.deleteServer(id).getAction().getError() == null;
 	}
 	
-	public ServerAction[] getActions(HetznerCloud cloud)
+	public ApiAction[] getActions(HetznerCloud cloud)
 	{
 		return cloud.getServerActions(id);
 	}
 	
-	public ServerAction getServerAction(HetznerCloud cloud, int id)
+	public ApiAction getServerAction(HetznerCloud cloud, int id)
 	{
 		return cloud.getServerAction(this.id, id);
 	}

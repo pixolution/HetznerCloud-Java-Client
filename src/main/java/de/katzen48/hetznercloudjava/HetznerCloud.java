@@ -6,9 +6,19 @@ import de.katzen48.hetznercloudjava.exceptions.APIException;
 import de.katzen48.hetznercloudjava.exceptions.BadRequestException;
 import de.katzen48.hetznercloudjava.exceptions.RateLimitException;
 import de.katzen48.hetznercloudjava.exceptions.UnauthorizedEndpointException;
+import de.katzen48.hetznercloudjava.reponses.actions.GetActionResponse;
+import de.katzen48.hetznercloudjava.reponses.actions.GetActionsResponse;
+import de.katzen48.hetznercloudjava.reponses.datacenters.GetDatacenterResponse;
+import de.katzen48.hetznercloudjava.reponses.datacenters.GetDatacentersResponse;
 import de.katzen48.hetznercloudjava.reponses.floatingips.GetFloatingIpResponse;
 import de.katzen48.hetznercloudjava.reponses.floatingips.GetFloatingIpsResponse;
+import de.katzen48.hetznercloudjava.reponses.floatingips.actions.GetFloatingIpActionResponse;
+import de.katzen48.hetznercloudjava.reponses.floatingips.actions.GetFloatingIpActionsResponse;
+import de.katzen48.hetznercloudjava.reponses.images.GetImageResponse;
 import de.katzen48.hetznercloudjava.reponses.images.GetImagesResponse;
+import de.katzen48.hetznercloudjava.reponses.isos.GetIsoResponse;
+import de.katzen48.hetznercloudjava.reponses.isos.GetIsosResponse;
+import de.katzen48.hetznercloudjava.reponses.locations.GetLocationResponse;
 import de.katzen48.hetznercloudjava.reponses.locations.GetLocationsResponse;
 import de.katzen48.hetznercloudjava.reponses.pricing.GetPricingResponse;
 import de.katzen48.hetznercloudjava.reponses.server.CreateServerResponse;
@@ -29,14 +39,21 @@ import de.katzen48.hetznercloudjava.requests.CreateServerRequest;
 import de.katzen48.hetznercloudjava.resources.FloatingIp;
 import de.katzen48.hetznercloudjava.resources.Image;
 import de.katzen48.hetznercloudjava.resources.Image.Type;
+import de.katzen48.hetznercloudjava.resources.Iso;
 import de.katzen48.hetznercloudjava.resources.Location;
 import de.katzen48.hetznercloudjava.resources.Pricing;
 import de.katzen48.hetznercloudjava.resources.Server;
-import de.katzen48.hetznercloudjava.resources.ServerAction;
+import de.katzen48.hetznercloudjava.resources.ApiAction;
+import de.katzen48.hetznercloudjava.resources.ApiAction.Status;
+import de.katzen48.hetznercloudjava.resources.Datacenter;
 import de.katzen48.hetznercloudjava.resources.ServerType;
 import de.katzen48.hetznercloudjava.resources.SshKey;
+import de.katzen48.hetznercloudjava.services.ActionsService;
+import de.katzen48.hetznercloudjava.services.DatacentersService;
+import de.katzen48.hetznercloudjava.services.FloatingIpActionsService;
 import de.katzen48.hetznercloudjava.services.FloatingIpsService;
 import de.katzen48.hetznercloudjava.services.ImagesService;
+import de.katzen48.hetznercloudjava.services.IsosService;
 import de.katzen48.hetznercloudjava.services.LocationsService;
 import de.katzen48.hetznercloudjava.services.PricingService;
 import de.katzen48.hetznercloudjava.services.ServerActionsService;
@@ -72,6 +89,72 @@ public class HetznerCloud
 		}).build();
 		
 		retrofit = new Retrofit.Builder().baseUrl(BASE_URI).addConverterFactory(GsonConverterFactory.create()).client(client).build();
+	}
+	
+	
+	public ApiAction[] getActions()
+	{
+		try 
+		{
+			return ((Response<GetActionsResponse>) doRequest(retrofit.create(ActionsService.class).getActions())).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction[] getActions(ApiAction.Status status)
+	{
+		try 
+		{
+			return ((Response<GetActionsResponse>) doRequest(retrofit.create(ActionsService.class).getActionsByStatus(status))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction[] getSortedActions(String sorting)
+	{
+		try 
+		{
+			return ((Response<GetActionsResponse>) doRequest(retrofit.create(ActionsService.class).getSortedActions(sorting))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction[] getSortedActions(Status status, String sorting)
+	{
+		try 
+		{
+			return ((Response<GetActionsResponse>) doRequest(retrofit.create(ActionsService.class).getSortedActionsByStatus(status, sorting))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction getAction(int id)
+	{
+		try 
+		{
+			return ((Response<GetActionResponse>) doRequest(retrofit.create(ActionsService.class).getAction(id))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public Server[] getServers()
@@ -152,7 +235,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction[] getServerActions(int serverId)
+	public ApiAction[] getServerActions(int serverId)
 	{
 		try 
 		{
@@ -165,7 +248,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction[] getSortedServerActions(int serverId, String sorting)
+	public ApiAction[] getSortedServerActions(int serverId, String sorting)
 	{
 		try 
 		{
@@ -178,7 +261,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction[] getServerActionsByStatus(int serverId, ServerAction.Status status)
+	public ApiAction[] getServerActionsByStatus(int serverId, ApiAction.Status status)
 	{
 		try 
 		{
@@ -191,7 +274,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction[] getSortedServerActionsByStatus(int serverId, String sorting, ServerAction.Status status)
+	public ApiAction[] getSortedServerActionsByStatus(int serverId, String sorting, ApiAction.Status status)
 	{
 		try 
 		{
@@ -204,7 +287,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction getServerAction(int serverId, int actionId)
+	public ApiAction getServerAction(int serverId, int actionId)
 	{
 		try 
 		{
@@ -217,7 +300,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction poweronServer(int serverId)
+	public ApiAction poweronServer(int serverId)
 	{
 		try 
 		{
@@ -230,7 +313,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction rebootServer(int serverId)
+	public ApiAction rebootServer(int serverId)
 	{
 		try 
 		{
@@ -243,7 +326,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction resetServer(int serverId)
+	public ApiAction resetServer(int serverId)
 	{
 		try 
 		{
@@ -256,7 +339,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction shutdownServer(int serverId)
+	public ApiAction shutdownServer(int serverId)
 	{
 		try 
 		{
@@ -269,7 +352,7 @@ public class HetznerCloud
 		}
 	}
 	
-	public ServerAction poweroffServer(int serverId)
+	public ApiAction poweroffServer(int serverId)
 	{
 		try 
 		{
@@ -542,6 +625,136 @@ public class HetznerCloud
 		}
 	}
 	
+	public FloatingIp createFloatingIp(de.katzen48.hetznercloudjava.resources.FloatingIp.Type type, Location homeLocation, int serverId, String description)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class).create(type, homeLocation, serverId, description))).body().getFloatingIp();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public FloatingIp changeFloatingIpDescription(int id)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class).changeDescription(id))).body().getFloatingIp();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public FloatingIp changeFloatingIpDescription(int id, String description)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class).changeDescription(id, description))).body().getFloatingIp();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public boolean deleteFloatingIp(int ipId)
+	{
+		try 
+		{
+			return ((Response<Object>) doRequest(retrofit.create(FloatingIpsService.class).delete(ipId))).isSuccessful();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public ApiAction[] getFloatingApiActions(int ipId)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpActionsResponse>) doRequest(retrofit.create(FloatingIpActionsService.class).getActions(ipId))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction[] getFloatingApiActions(int ipId, String sorting)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpActionsResponse>) doRequest(retrofit.create(FloatingIpActionsService.class).getSortedActions(ipId, sorting))).body().getActions();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction getFloatingApiAction(int ipId, int actionId)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpActionResponse>) doRequest(retrofit.create(FloatingIpActionsService.class).getAction(ipId, actionId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction assignFloatingIpToServer(int ipId, int serverId)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpActionResponse>) doRequest(retrofit.create(FloatingIpActionsService.class).assignToServer(ipId, serverId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction unassignFloatingIp(int ipId)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpActionResponse>) doRequest(retrofit.create(FloatingIpActionsService.class).unassign(ipId))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ApiAction changeFloatingIpDnsPtr(int ipId, String ip, String dnsPtr)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpActionResponse>) doRequest(retrofit.create(FloatingIpActionsService.class).changeDnsPtr(ipId, ip, dnsPtr))).body().getAction();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public SshKey[] getSshKeys()
 	{
 		try 
@@ -685,11 +898,63 @@ public class HetznerCloud
 		}
 	}
 	
-	public Pricing getPricing()
+	public Location[] getLocations(String name)
 	{
 		try 
 		{
-			return ((Response<GetPricingResponse>) doRequest(retrofit.create(PricingService.class).getPricing())).body().getPricing();
+			return ((Response<GetLocationsResponse>) doRequest(retrofit.create(LocationsService.class).getLocationsByName(name))).body().getLocations();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Location getLocation(int id)
+	{
+		try 
+		{
+			return ((Response<GetLocationResponse>) doRequest(retrofit.create(LocationsService.class).getLocation(id))).body().getLocation();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Datacenter[] getDatacenters()
+	{
+		try 
+		{
+			return ((Response<GetDatacentersResponse>) doRequest(retrofit.create(DatacentersService.class).getDatacenters())).body().getDatacenters();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Datacenter[] getDatacenters(String name)
+	{
+		try 
+		{
+			return ((Response<GetDatacentersResponse>) doRequest(retrofit.create(DatacentersService.class).getDatacentersByName(name))).body().getDatacenters();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Datacenter getDatacenter(int id)
+	{
+		try 
+		{
+			return ((Response<GetDatacenterResponse>) doRequest(retrofit.create(DatacentersService.class).getDatacenter(id))).body().getDatacenter();
 		} 
 		catch (APIException e) 
 		{
@@ -703,6 +968,188 @@ public class HetznerCloud
 		try 
 		{
 			return ((Response<GetImagesResponse>) doRequest(retrofit.create(ImagesService.class).getImages())).body().getImages();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image[] getSortedImages(String sorting)
+	{
+		try 
+		{
+			return ((Response<GetImagesResponse>) doRequest(retrofit.create(ImagesService.class).getSortedImages(sorting))).body().getImages();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image[] getImagesByType(Image.Type type)
+	{
+		try 
+		{
+			return ((Response<GetImagesResponse>) doRequest(retrofit.create(ImagesService.class).getImagesByType(type))).body().getImages();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image[] getBoundImages(String boundTo)
+	{
+		try 
+		{
+			return ((Response<GetImagesResponse>) doRequest(retrofit.create(ImagesService.class).getImagesBoundTo(boundTo))).body().getImages();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image[] getImages(String name)
+	{
+		try 
+		{
+			return ((Response<GetImagesResponse>) doRequest(retrofit.create(ImagesService.class).getImagesByName(name))).body().getImages();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image getImage(int id)
+	{
+		try 
+		{
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).getImage(id))).body().getImage();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image updateImage(int id)
+	{
+		try 
+		{
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).updateImage(id))).body().getImage();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image updateImageDescription(int id, String description)
+	{
+		try 
+		{
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).updateImageDescription(id, description))).body().getImage();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image updateImageType(int id, Type type)
+	{
+		try 
+		{
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).updateImageType(id, type))).body().getImage();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Image updateImage(int id, String description, Type type)
+	{
+		try 
+		{
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).updateImage(id, description, type))).body().getImage();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public boolean deleteImage(int id)
+	{
+		try 
+		{
+			return ((Response<Object>) doRequest(retrofit.create(ImagesService.class).delete(id))).isSuccessful();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public Iso[] getIsos()
+	{
+		try 
+		{
+			return ((Response<GetIsosResponse>) doRequest(retrofit.create(IsosService.class).getIsos())).body().getIsos();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Iso[] getIsos(String name)
+	{
+		try 
+		{
+			return ((Response<GetIsosResponse>) doRequest(retrofit.create(IsosService.class).getIsosByName(name))).body().getIsos();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Iso getIso(int id)
+	{
+		try 
+		{
+			return ((Response<GetIsoResponse>) doRequest(retrofit.create(IsosService.class).getIso(id))).body().getIso();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Pricing getPricing()
+	{
+		try 
+		{
+			return ((Response<GetPricingResponse>) doRequest(retrofit.create(PricingService.class).getPricing())).body().getPricing();
 		} 
 		catch (APIException e) 
 		{

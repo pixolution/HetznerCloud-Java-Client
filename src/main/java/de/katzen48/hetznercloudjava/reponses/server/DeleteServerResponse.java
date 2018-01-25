@@ -1,14 +1,14 @@
 package de.katzen48.hetznercloudjava.reponses.server;
 
 import de.katzen48.hetznercloudjava.resources.RequestError;
-import de.katzen48.hetznercloudjava.resources.ServerAction;
+import de.katzen48.hetznercloudjava.resources.ApiAction;
 
 public class DeleteServerResponse 
 {
-	private ServerAction action;
+	private ApiAction action;
 	private RequestError error;
 	
-	public ServerAction getAction() 
+	public ApiAction getAction() 
 	{
 		return action;
 	}

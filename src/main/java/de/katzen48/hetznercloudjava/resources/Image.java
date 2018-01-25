@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 import com.google.gson.annotations.SerializedName;
 
+import de.katzen48.hetznercloudjava.HetznerCloud;
+
 public class Image 
 {
 	private int id;
@@ -27,6 +29,44 @@ public class Image
 	@SerializedName("rapid_deploy")
 	private boolean rapidDeploy;
 
+	
+	public boolean updateDescription(HetznerCloud cloud, String description)
+	{
+		if(!cloud.updateImageDescription(id, description).description.equals(this.description))
+		{
+			this.description = description;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean updateType(HetznerCloud cloud, Type type)
+	{
+		if(!cloud.updateImageType(id, type).type.equals(this.type))
+		{
+			this.type = type;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean update(HetznerCloud cloud, String description, Type type)
+	{
+		Image image = cloud.updateImage(id, description, type);
+		if(!image.type.equals(this.type) && !image.description.equals(this.description))
+		{
+			this.type = type;
+			this.description = description;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean delete(HetznerCloud cloud)
+	{
+		return cloud.deleteImage(id);
+	}
+	
 	
 	public int getId()
 	{

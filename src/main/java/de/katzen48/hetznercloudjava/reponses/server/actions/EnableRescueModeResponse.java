@@ -2,19 +2,19 @@ package de.katzen48.hetznercloudjava.reponses.server.actions;
 
 import com.google.gson.annotations.SerializedName;
 
-import de.katzen48.hetznercloudjava.resources.ServerAction;
+import de.katzen48.hetznercloudjava.resources.ApiAction;
 
 public class EnableRescueModeResponse 
 {
 	@SerializedName("root_password")
 	private String rootPassword;
-	private ServerAction action;
+	private ApiAction action;
 	
 	public String getRootPassword() 
 	{
 		return rootPassword;
 	}
-	public ServerAction getAction()
+	public ApiAction getAction()
 	{
 		return action;
 	}

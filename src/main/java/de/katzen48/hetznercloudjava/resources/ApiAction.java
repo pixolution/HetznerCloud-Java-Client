@@ -2,7 +2,7 @@ package de.katzen48.hetznercloudjava.resources;
 
 import java.sql.Timestamp;
 
-public class ServerAction 
+public class ApiAction 
 {
 	private int id;
 	private String command;

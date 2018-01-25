@@ -2,6 +2,7 @@ package de.katzen48.hetznercloudjava.services;
 
 import de.katzen48.hetznercloudjava.reponses.images.GetImageResponse;
 import de.katzen48.hetznercloudjava.reponses.images.GetImagesResponse;
+import de.katzen48.hetznercloudjava.resources.Image.Type;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -18,11 +19,11 @@ public interface ImagesService
 	
 	@Headers({ "Accept: application/json" })
 	@GET("images?sort={sort}")
-	public Call<GetImagesResponse> getImagesSorted(@Path("sort") String sorting);
+	public Call<GetImagesResponse> getSortedImages(@Path("sort") String sorting);
 	
 	@Headers({ "Accept: application/json" })
 	@GET("images?type={type}")
-	public Call<GetImagesResponse> getImagesByType(@Path("type") String type);
+	public Call<GetImagesResponse> getImagesByType(@Path("type") Type type);
 	
 	@Headers({ "Accept: application/json" })
 	@GET("images?bound_to={bound_to}")
@@ -70,13 +71,13 @@ public interface ImagesService
 	
 	@Headers({ "Accept: application/json" })
 	@PUT("images/{id}")
-	public Call<GetImageResponse> updateImageType(@Path("id") int id, @Query("type") String type);
+	public Call<GetImageResponse> updateImageType(@Path("id") int id, @Query("type") Type type);
 	
 	@Headers({ "Accept: application/json" })
 	@PUT("images/{id}")
-	public Call<GetImageResponse> updateImage(@Path("id") int id, @Query("description") String description, @Query("type") String type);
+	public Call<GetImageResponse> updateImage(@Path("id") int id, @Query("description") String description, @Query("type") Type type);
 	
 	@Headers({ "Accept: application/json" })
 	@DELETE("images/{id}")
-	public Call<GetImageResponse> deleteImage(@Path("id") int id);
+	public Call<Object> delete(@Path("id") int id);
 }
