@@ -124,6 +124,11 @@ public class Server
 		return cloud.createServerImage(id, type).getImage();
 	}
 	
+	public Image createImage(HetznerCloud cloud, Type type, String description)
+	{
+		return cloud.createServerImage(id, description, type).getImage();
+	}
+	
 	public String rebuild(HetznerCloud cloud, int imageId)
 	{
 		return cloud.rebuildServer(id, imageId).getRootPassword();

@@ -6,7 +6,10 @@ import de.katzen48.hetznercloudjava.exceptions.APIException;
 import de.katzen48.hetznercloudjava.exceptions.BadRequestException;
 import de.katzen48.hetznercloudjava.exceptions.RateLimitException;
 import de.katzen48.hetznercloudjava.exceptions.UnauthorizedEndpointException;
+import de.katzen48.hetznercloudjava.reponses.floatingips.GetFloatingIpResponse;
+import de.katzen48.hetznercloudjava.reponses.floatingips.GetFloatingIpsResponse;
 import de.katzen48.hetznercloudjava.reponses.images.GetImagesResponse;
+import de.katzen48.hetznercloudjava.reponses.locations.GetLocationsResponse;
 import de.katzen48.hetznercloudjava.reponses.pricing.GetPricingResponse;
 import de.katzen48.hetznercloudjava.reponses.server.CreateServerResponse;
 import de.katzen48.hetznercloudjava.reponses.server.DeleteServerResponse;
@@ -18,16 +21,28 @@ import de.katzen48.hetznercloudjava.reponses.server.actions.RebuildServerRespons
 import de.katzen48.hetznercloudjava.reponses.server.actions.ResetPasswordResponse;
 import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionResponse;
 import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionsResponse;
+import de.katzen48.hetznercloudjava.reponses.servertypes.GetServerTypeResponse;
+import de.katzen48.hetznercloudjava.reponses.servertypes.GetServerTypesResponse;
+import de.katzen48.hetznercloudjava.reponses.sshkeys.GetSshKeyResponse;
+import de.katzen48.hetznercloudjava.reponses.sshkeys.GetSshKeysResponse;
 import de.katzen48.hetznercloudjava.requests.CreateServerRequest;
+import de.katzen48.hetznercloudjava.resources.FloatingIp;
 import de.katzen48.hetznercloudjava.resources.Image;
 import de.katzen48.hetznercloudjava.resources.Image.Type;
+import de.katzen48.hetznercloudjava.resources.Location;
 import de.katzen48.hetznercloudjava.resources.Pricing;
 import de.katzen48.hetznercloudjava.resources.Server;
 import de.katzen48.hetznercloudjava.resources.ServerAction;
+import de.katzen48.hetznercloudjava.resources.ServerType;
+import de.katzen48.hetznercloudjava.resources.SshKey;
+import de.katzen48.hetznercloudjava.services.FloatingIpsService;
 import de.katzen48.hetznercloudjava.services.ImagesService;
+import de.katzen48.hetznercloudjava.services.LocationsService;
 import de.katzen48.hetznercloudjava.services.PricingService;
 import de.katzen48.hetznercloudjava.services.ServerActionsService;
+import de.katzen48.hetznercloudjava.services.ServerTypesService;
 import de.katzen48.hetznercloudjava.services.ServersService;
+import de.katzen48.hetznercloudjava.services.SshKeysService;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -371,6 +386,19 @@ public class HetznerCloud
 		}
 	}
 	
+	public CreateImageResponse createServerImage(int serverId, String description, Type type)
+	{
+		try 
+		{
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId, description, type))).body();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public RebuildServerResponse rebuildServer(int serverId, int imageId)
 	{
 		try 
@@ -486,13 +514,169 @@ public class HetznerCloud
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}	
 	
-	public CreateImageResponse createServerImage(int serverId, String description, Type type)
+	public FloatingIp[] getFloatingIps()
 	{
 		try 
 		{
-			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId, description, type))).body();
+			return ((Response<GetFloatingIpsResponse>) doRequest(retrofit.create(FloatingIpsService.class).getFloatingIps())).body().getFloatingIps();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public FloatingIp getFloatingIp(int id)
+	{
+		try 
+		{
+			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class).getFloatingIp(id))).body().getFloatingIp();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public SshKey[] getSshKeys()
+	{
+		try 
+		{
+			return ((Response<GetSshKeysResponse>) doRequest(retrofit.create(SshKeysService.class).getSshKeys())).body().getSshKeys();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public SshKey[] getSshKeys(String name)
+	{
+		try 
+		{
+			return ((Response<GetSshKeysResponse>) doRequest(retrofit.create(SshKeysService.class).getSshKeysByName(name))).body().getSshKeys();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public SshKey getSshKey(int id)
+	{
+		try 
+		{
+			return ((Response<GetSshKeyResponse>) doRequest(retrofit.create(SshKeysService.class).getSshKey(id))).body().getSshKey();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public SshKey createSshKey(String name, String publicKey)
+	{
+		try 
+		{
+			return ((Response<GetSshKeyResponse>) doRequest(retrofit.create(SshKeysService.class).createSshKey(name, publicKey))).body().getSshKey();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public SshKey changeSshKeyName(int id)
+	{
+		try 
+		{
+			return ((Response<GetSshKeyResponse>) doRequest(retrofit.create(SshKeysService.class).changeName(id))).body().getSshKey();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public SshKey changeSshKeyName(int id, String name)
+	{
+		try 
+		{
+			return ((Response<GetSshKeyResponse>) doRequest(retrofit.create(SshKeysService.class).changeName(id, name))).body().getSshKey();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public boolean deleteSshKey(int id)
+	{
+		try 
+		{
+			return ((Response<Object>) doRequest(retrofit.create(SshKeysService.class).delete(id))).isSuccessful();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public ServerType[] getServerTypes()
+	{
+		try 
+		{
+			return ((Response<GetServerTypesResponse>) doRequest(retrofit.create(ServerTypesService.class).getServerTypes())).body().getServerTypes();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerType[] getServerTypes(String name)
+	{
+		try 
+		{
+			return ((Response<GetServerTypesResponse>) doRequest(retrofit.create(ServerTypesService.class).getServerTypesByName(name))).body().getServerTypes();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ServerType getServerType(int id)
+	{
+		try 
+		{
+			return ((Response<GetServerTypeResponse>) doRequest(retrofit.create(ServerTypesService.class).getServerType(id))).body().getServerType();
+		} 
+		catch (APIException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Location[] getLocations()
+	{
+		try 
+		{
+			return ((Response<GetLocationsResponse>) doRequest(retrofit.create(LocationsService.class).getLocations())).body().getLocations();
 		} 
 		catch (APIException e) 
 		{
