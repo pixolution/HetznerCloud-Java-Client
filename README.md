@@ -1,5 +1,4 @@
 # Java Client for HetznerCloud [![](https://jitpack.io/v/Katzen48/HetznerCloud-Java-Client.svg)](https://jitpack.io/#Katzen48/HetznerCloud-Java-Client)
-----------
 ## **Installation**
 ### **Maven**
 Just put this into your pom.xml:
