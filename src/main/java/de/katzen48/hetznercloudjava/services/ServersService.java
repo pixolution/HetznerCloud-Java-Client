@@ -4,6 +4,7 @@ import de.katzen48.hetznercloudjava.reponses.server.CreateServerResponse;
 import de.katzen48.hetznercloudjava.reponses.server.DeleteServerResponse;
 import de.katzen48.hetznercloudjava.reponses.server.GetServerResponse;
 import de.katzen48.hetznercloudjava.reponses.server.GetServersResponse;
+import de.katzen48.hetznercloudjava.requests.ChangeNameRequest;
 import de.katzen48.hetznercloudjava.requests.CreateServerRequest;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -35,7 +36,7 @@ public interface ServersService
 	
 	@Headers({ "Accept: application/json" })
 	@PUT("servers/{id}")
-	public Call<GetServerResponse> changeName(@Path("id") int id, @Query("name") String name);
+	public Call<GetServerResponse> changeName(@Path("id") int id, @Body ChangeNameRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@DELETE("servers/{id}")

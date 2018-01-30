@@ -9,10 +9,19 @@ public class DNSPtr
 	private String dnsPtr;
 	
 	
+	/**
+	 * Get the IP
+	 * @return IP
+	 */
 	public String getIp() 
 	{
 		return ip;
 	}
+	
+	/**
+	 * Get the ReverseRecord
+	 * @return ReverseRecord
+	 */
 	public String getDnsPtr() 
 	{
 		return dnsPtr;

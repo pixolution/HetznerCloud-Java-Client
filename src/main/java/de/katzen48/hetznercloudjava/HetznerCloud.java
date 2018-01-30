@@ -35,7 +35,20 @@ import de.katzen48.hetznercloudjava.reponses.servertypes.GetServerTypeResponse;
 import de.katzen48.hetznercloudjava.reponses.servertypes.GetServerTypesResponse;
 import de.katzen48.hetznercloudjava.reponses.sshkeys.GetSshKeyResponse;
 import de.katzen48.hetznercloudjava.reponses.sshkeys.GetSshKeysResponse;
+import de.katzen48.hetznercloudjava.requests.AssignFloatingIpToServerRequest;
+import de.katzen48.hetznercloudjava.requests.AttachServerIsoRequest;
+import de.katzen48.hetznercloudjava.requests.ChangeDescriptionRequest;
+import de.katzen48.hetznercloudjava.requests.ChangeDnsPtrRequest;
+import de.katzen48.hetznercloudjava.requests.ChangeNameRequest;
+import de.katzen48.hetznercloudjava.requests.ChangeServerTypeRequest;
+import de.katzen48.hetznercloudjava.requests.CreateFloatingIpRequest;
+import de.katzen48.hetznercloudjava.requests.CreateServerImageRequest;
 import de.katzen48.hetznercloudjava.requests.CreateServerRequest;
+import de.katzen48.hetznercloudjava.requests.CreateSshKeyRequest;
+import de.katzen48.hetznercloudjava.requests.EnableServerBackupRequest;
+import de.katzen48.hetznercloudjava.requests.EnableServerRescueModeRequest;
+import de.katzen48.hetznercloudjava.requests.RebuildServerRequest;
+import de.katzen48.hetznercloudjava.requests.UpdateImageRequest;
 import de.katzen48.hetznercloudjava.resources.FloatingIp;
 import de.katzen48.hetznercloudjava.resources.Image;
 import de.katzen48.hetznercloudjava.resources.Image.Type;
@@ -68,8 +81,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Main Class for the API. Use the Builder to create an Instance
+ */
 public class HetznerCloud 
 {
+	/**
+	 * Base URL of the HetznerCloud-API
+	 */
 	public static final String BASE_URI = "https://api.hetzner.cloud/v1/";
 	
 	private Retrofit retrofit;
@@ -92,6 +111,10 @@ public class HetznerCloud
 	}
 	
 	
+	/**
+	 * Get all actions of the current project
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getActions()
 	{
 		try 
@@ -105,6 +128,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Actions with the provided Status
+	 * @param status Preferred status
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getActions(ApiAction.Status status)
 	{
 		try 
@@ -118,6 +146,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Actions with a custom Sorting
+	 * @param sorting Preferred Sorting
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getSortedActions(String sorting)
 	{
 		try 
@@ -131,6 +164,12 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Actions with a custom Sorting and matching the provied Status
+	 * @param status Preferred status
+	 * @param sorting Preferred Sorting
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getSortedActions(Status status, String sorting)
 	{
 		try 
@@ -144,6 +183,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get an ApiAction with the specified ID
+	 * @param id ID of the Action
+	 * @return The ApiAction
+	 */
 	public ApiAction getAction(int id)
 	{
 		try 
@@ -157,6 +201,10 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all your Servers
+	 * @return Array of Servers
+	 */
 	public Server[] getServers()
 	{
 		try 
@@ -170,6 +218,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Servers matching the provided Name
+	 * @param name Preferred Name
+	 * @return Array of Servers
+	 */
 	public Server[] getServers(String name)
 	{
 		try 
@@ -183,6 +236,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a Server with a specific ID
+	 * @param id ID of the Server
+	 * @return The Server
+	 */
 	public Server getServer(int id)
 	{
 		try 
@@ -196,6 +254,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Create a Server
+	 * @param request Needed Request containing all required Information
+	 * @return The Response containing the Server, the ApiAction and the Root Password
+	 */
 	public CreateServerResponse createServer(CreateServerRequest request)
 	{
 		try 
@@ -209,11 +272,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the Name of a Server
+	 * @param id ID of the Server
+	 * @param name Name, you want the Server to get
+	 * @return The new Server-Object
+	 */
 	public Server changeServerName(int id, String name)
 	{
 		try 
 		{
-			return ((Response<GetServerResponse>) doRequest(retrofit.create(ServersService.class).changeName(id, name))).body().getServer();
+			return ((Response<GetServerResponse>) doRequest(retrofit.create(ServersService.class).changeName(id, new ChangeNameRequest(
+					name)))).body().getServer();
 		} 
 		catch (APIException e) 
 		{
@@ -222,19 +292,29 @@ public class HetznerCloud
 		}
 	}
 	
-	public DeleteServerResponse deleteServer(int id)
+	/**
+	 * Delete a Server
+	 * @param id ID of the Server
+	 * @return If the Server was deleted
+	 */
+	public boolean deleteServer(int id)
 	{
 		try 
 		{
-			return ((Response<DeleteServerResponse>) doRequest(retrofit.create(ServersService.class).delete(id))).body();
+			return ((Response<DeleteServerResponse>) doRequest(retrofit.create(ServersService.class).delete(id))).body().getError() == null;
 		} 
 		catch (APIException e) 
 		{
 			e.printStackTrace();
-			return null;
+			return false;
 		}
 	}
 	
+	/**
+	 * Get all Actions for a specific Server
+	 * @param serverId Preferred Server
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getServerActions(int serverId)
 	{
 		try 
@@ -248,6 +328,12 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Actions for a specific Server sorted by a custom Sorting
+	 * @param serverId Preferred Server
+	 * @param sorting Preferred Sorting
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getSortedServerActions(int serverId, String sorting)
 	{
 		try 
@@ -261,6 +347,12 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Actions for a specific Server with the given Status
+	 * @param serverId Preferred Server
+	 * @param status Preferred Status
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getServerActionsByStatus(int serverId, ApiAction.Status status)
 	{
 		try 
@@ -274,6 +366,13 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Actions for a specific Server with a custom Sorting and Status
+	 * @param serverId Preferred Server
+	 * @param sorting Preferred Sorting
+	 * @param status Preferred Status
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getSortedServerActionsByStatus(int serverId, String sorting, ApiAction.Status status)
 	{
 		try 
@@ -287,6 +386,12 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get an Action for a specific Server
+	 * @param serverId Preferred Server
+	 * @param actionId Preferred Action
+	 * @return The ApiAction
+	 */
 	public ApiAction getServerAction(int serverId, int actionId)
 	{
 		try 
@@ -300,6 +405,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Start a Server
+	 * @param serverId Preferred Server
+	 * @return The ApiAction
+	 */
 	public ApiAction poweronServer(int serverId)
 	{
 		try 
@@ -313,6 +423,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Reboot a Server
+	 * @param serverId Preferred Server
+	 * @return The ApiAction
+	 */
 	public ApiAction rebootServer(int serverId)
 	{
 		try 
@@ -326,6 +441,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Reset a Server
+	 * @param serverId Preferred Server
+	 * @return The ApiAction
+	 */
 	public ApiAction resetServer(int serverId)
 	{
 		try 
@@ -339,6 +459,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Shutdown a Server
+	 * @param serverId Preferred Server
+	 * @return The ApiAction
+	 */
 	public ApiAction shutdownServer(int serverId)
 	{
 		try 
@@ -352,6 +477,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Poweroff a Server
+	 * @param serverId Preferred Server
+	 * @return The ApiAction
+	 */
 	public ApiAction poweroffServer(int serverId)
 	{
 		try 
@@ -365,6 +495,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Reset the Root Password of a Server
+	 * @param serverId Preferred Server
+	 * @return The Response
+	 */
 	public ResetPasswordResponse resetServerPassword(int serverId)
 	{
 		try 
@@ -378,11 +513,17 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Enable the Rescue Mode of a Server
+	 * @param serverId Preferred Server
+	 * @return The Response
+	 */
 	public EnableRescueModeResponse enableServerRescueMode(int serverId)
 	{
 		try 
 		{
-			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class).enableRescueMode(serverId))).body();
+			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.enableRescueMode(serverId, new EnableServerRescueModeRequest.Builder().build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -391,11 +532,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Enable the Rescue Mode of a Server with a specific OS
+	 * @param serverId Preferred Server
+	 * @param osType Preferred OS
+	 * @return The Response
+	 */
 	public EnableRescueModeResponse enableServerRescueMode(int serverId, String osType)
 	{
 		try 
 		{
-			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class).enableRescueMode(serverId, osType))).body();
+			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.enableRescueMode(serverId, new EnableServerRescueModeRequest.Builder().withOsType(osType).build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -404,11 +552,19 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Enable the Rescue Mode of a Server and add SSH-Keys
+	 * @param serverId Preferred Server
+	 * @param sshKeys Your SSH-Keys
+	 * @return The Response
+	 */
 	public EnableRescueModeResponse enableServerRescueMode(int serverId, int[] sshKeys)
 	{
 		try 
 		{
-			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class).enableRescueMode(serverId, sshKeys))).body();
+			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.enableRescueMode(serverId, new EnableServerRescueModeRequest.Builder().withSshKeys(sshKeys)
+							.build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -417,11 +573,20 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Enable the Rescue Mode of a Server with a specific OS and add SSH-Keys
+	 * @param serverId Preferred Server
+	 * @param osType Preferred OS
+	 * @param sshKeys Your SSH-Keys
+	 * @return The Response
+	 */
 	public EnableRescueModeResponse enableServerRescueMode(int serverId, String osType, int[] sshKeys)
 	{
 		try 
 		{
-			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class).enableRescueMode(serverId, osType, sshKeys))).body();
+			return ((Response<EnableRescueModeResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.enableRescueMode(serverId, new EnableServerRescueModeRequest.Builder().withOsType(osType)
+							.withSshKeys(sshKeys).build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -430,11 +595,17 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Create a Server Image
+	 * @param serverId Preferred Server
+	 * @return The Response
+	 */
 	public CreateImageResponse createServerImage(int serverId)
 	{
 		try 
 		{
-			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId))).body();
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.createImage(serverId, new CreateServerImageRequest.Builder().build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -443,11 +614,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Create a Server Image with a specific Description
+	 * @param serverId Preferred Server
+	 * @param description Preferred Description
+	 * @return The Response
+	 */
 	public CreateImageResponse createServerImage(int serverId, String description)
 	{
 		try 
 		{
-			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId, description))).body();
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.createImage(serverId, new CreateServerImageRequest.Builder().withDescription(description).build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -456,11 +634,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Create a Server Image with a specific Type
+	 * @param serverId Preferred Server
+	 * @param type Preferred Type
+	 * @return The Response
+	 */
 	public CreateImageResponse createServerImage(int serverId, Type type)
 	{
 		try 
 		{
-			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId, type))).body();
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.createImage(serverId, new CreateServerImageRequest.Builder().withType(type).build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -469,11 +654,20 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Create a Server Image with a specific Description and a Type
+	 * @param serverId Preferred Server
+	 * @param description Preferred Description
+	 * @param type Preferred Type
+	 * @return The Response
+	 */
 	public CreateImageResponse createServerImage(int serverId, String description, Type type)
 	{
 		try 
 		{
-			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class).createImage(serverId, description, type))).body();
+			return ((Response<CreateImageResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.createImage(serverId, new CreateServerImageRequest.Builder().withDescription(description)
+							.withType(type).build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -482,11 +676,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Rebuild a Server with an Image
+	 * @param serverId Preferred Server
+	 * @param imageId Preferred Image
+	 * @return The Response
+	 */
 	public RebuildServerResponse rebuildServer(int serverId, int imageId)
 	{
 		try 
 		{
-			return ((Response<RebuildServerResponse>) doRequest(retrofit.create(ServerActionsService.class).rebuildServer(serverId, imageId))).body();
+			return ((Response<RebuildServerResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.rebuildServer(serverId, new RebuildServerRequest(imageId)))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -495,11 +696,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the Type of a Server
+	 * @param serverId Preferred Server
+	 * @param type Preferred Type
+	 * @return The Response
+	 */
 	public ServerActionResponse changeServerType(int serverId, String type)
 	{
 		try 
 		{
-			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).changeServerType(serverId, type))).body();
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.changeServerType(serverId, new ChangeServerTypeRequest.Builder().withType(type).build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -508,11 +716,20 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the Type of a Server
+	 * @param serverId Preferred Server
+	 * @param type Preferred Type
+	 * @param upgradeDisk If you want to upgrade the Disk
+	 * @return The Response
+	 */
 	public ServerActionResponse changeServerType(int serverId, String type, boolean upgradeDisk)
 	{
 		try 
 		{
-			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).changeServerType(serverId, type, upgradeDisk))).body();
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.changeServerType(serverId, new ChangeServerTypeRequest.Builder().withType(type)
+							.upgradeDisk(upgradeDisk).build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -521,11 +738,17 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Enable Backups for a Server
+	 * @param serverId Preferred Server
+	 * @return The Response
+	 */
 	public ServerActionResponse enableBackup(int serverId)
 	{
 		try 
 		{
-			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).enableBackup(serverId))).body();
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.enableBackup(serverId))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -534,11 +757,19 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Enable Backups for a Server during a specific BackupWindow
+	 * @param serverId Preferred Server
+	 * @param backupWindow Preferred BackupWindow
+	 * @return The Response
+	 */
 	public ServerActionResponse enableBackup(int serverId, String backupWindow)
 	{
 		try 
 		{
-			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).enableBackup(serverId, backupWindow))).body();
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.enableBackup(serverId, new EnableServerBackupRequest.Builder().withBackupWindow(backupWindow)
+							.build()))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -547,6 +778,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Disable Backups for a Server
+	 * @param serverId Preferred Server
+	 * @return The Response
+	 */
 	public ServerActionResponse disableBackup(int serverId)
 	{
 		try 
@@ -560,11 +796,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Attach an Iso to a Server
+	 * @param serverId Preferred Server
+	 * @param iso Preferred Iso
+	 * @return The Response
+	 */
 	public ServerActionResponse attachIsoToServer(int serverId, int iso)
 	{
 		try 
 		{
-			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).attachIso(serverId, iso))).body();
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.attachIso(serverId, new AttachServerIsoRequest(iso)))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -573,11 +816,17 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Detach an Iso from a Server
+	 * @param serverId Preferred Server
+	 * @return The Response
+	 */
 	public ServerActionResponse detachIsoFromServer(int serverId)
 	{
 		try 
 		{
-			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).detachIso(serverId))).body();
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.detachIso(serverId))).body();
 		} 
 		catch (APIException e) 
 		{
@@ -586,11 +835,20 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the DNS-PTR of a Server
+	 * @param serverId Preferred Server
+	 * @param ip Preferred IP
+	 * @param dnsPtr Preferred DNS-PTR
+	 * @return The Response
+	 */
 	public ServerActionResponse changeServerDnsPtr(int serverId, String ip, String dnsPtr)
 	{
 		try 
 		{
-			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class).changeDnsPtr(serverId, ip, dnsPtr))).body();
+			return ((Response<ServerActionResponse>) doRequest(retrofit.create(ServerActionsService.class)
+					.changeDnsPtr(serverId, new ChangeDnsPtrRequest.Builder().withIp(ip).withDnsPtr(dnsPtr).build())))
+					.body();
 		} 
 		catch (APIException e) 
 		{
@@ -599,6 +857,10 @@ public class HetznerCloud
 		}
 	}	
 	
+	/**
+	 * Get all FloatingIPs
+	 * @return Array of FloatingIPs
+	 */
 	public FloatingIp[] getFloatingIps()
 	{
 		try 
@@ -612,6 +874,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a FloatingIP
+	 * @param id Preferred IP
+	 * @return The FloatingIP
+	 */
 	public FloatingIp getFloatingIp(int id)
 	{
 		try 
@@ -625,11 +892,21 @@ public class HetznerCloud
 		}
 	}
 	
-	public FloatingIp createFloatingIp(de.katzen48.hetznercloudjava.resources.FloatingIp.Type type, Location homeLocation, int serverId, String description)
+	/**
+	 * Create a FloatingIP
+	 * @param type Preferred Type
+	 * @param homeLocation Preferred HomeLocation
+	 * @param serverId Preferred Server
+	 * @param description Preferred Description
+	 * @return The FloatingIP
+	 */
+	public FloatingIp createFloatingIp(de.katzen48.hetznercloudjava.resources.FloatingIp.Type type, String homeLocation, int serverId, String description)
 	{
 		try 
 		{
-			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class).create(type, homeLocation, serverId, description))).body().getFloatingIp();
+			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class)
+					.create(new CreateFloatingIpRequest.Builder().withType(type).withLocation(homeLocation)
+							.withServer(serverId).withDescription(description).build()))).body().getFloatingIp();
 		} 
 		catch (APIException e) 
 		{
@@ -638,11 +915,17 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the Description of a FloatingIP
+	 * @param id Preferred FloatingIP
+	 * @return The new FloatingIP Object
+	 */
 	public FloatingIp changeFloatingIpDescription(int id)
 	{
 		try 
 		{
-			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class).changeDescription(id))).body().getFloatingIp();
+			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class)
+					.changeDescription(id, new ChangeDescriptionRequest(null)))).body().getFloatingIp();
 		} 
 		catch (APIException e) 
 		{
@@ -651,11 +934,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the Description of a FloatingIP
+	 * @param id Preferred FloatingIP
+	 * @param description Preferred Description
+	 * @return
+	 */
 	public FloatingIp changeFloatingIpDescription(int id, String description)
 	{
 		try 
 		{
-			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class).changeDescription(id, description))).body().getFloatingIp();
+			return ((Response<GetFloatingIpResponse>) doRequest(retrofit.create(FloatingIpsService.class)
+					.changeDescription(id, new ChangeDescriptionRequest(description)))).body().getFloatingIp();
 		} 
 		catch (APIException e) 
 		{
@@ -664,6 +954,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Delete a FloatingIP
+	 * @param ipId Preferred FloatingIP
+	 * @return If the FloatingIP was deleted
+	 */
 	public boolean deleteFloatingIp(int ipId)
 	{
 		try 
@@ -677,6 +972,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Actions for a specific FloatingIP
+	 * @param ipId Preferred FloatingIP
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getFloatingApiActions(int ipId)
 	{
 		try 
@@ -690,6 +990,12 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Actions for a specific FloatingIP
+	 * @param ipId Preferred FloatingIP
+	 * @param sorting Preferred Sorting
+	 * @return Array of ApiActions
+	 */
 	public ApiAction[] getFloatingApiActions(int ipId, String sorting)
 	{
 		try 
@@ -703,6 +1009,12 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a specific Action for a FloatingIP
+	 * @param ipId Preferred FloatingIP
+	 * @param actionId Preferred Action
+	 * @return The ApiAction
+	 */
 	public ApiAction getFloatingApiAction(int ipId, int actionId)
 	{
 		try 
@@ -716,11 +1028,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Assign a FloatingIP to a Server
+	 * @param ipId Preferred FloatingIP
+	 * @param serverId Preferred Server
+	 * @return The ApiAction
+	 */
 	public ApiAction assignFloatingIpToServer(int ipId, int serverId)
 	{
 		try 
 		{
-			return ((Response<GetFloatingIpActionResponse>) doRequest(retrofit.create(FloatingIpActionsService.class).assignToServer(ipId, serverId))).body().getAction();
+			return ((Response<GetFloatingIpActionResponse>) doRequest(retrofit.create(FloatingIpActionsService.class)
+					.assignToServer(ipId, new AssignFloatingIpToServerRequest(serverId)))).body().getAction();
 		} 
 		catch (APIException e) 
 		{
@@ -729,6 +1048,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Unassign a FloatingIP
+	 * @param ipId Preferred FloatingIP
+	 * @return The ApiAction
+	 */
 	public ApiAction unassignFloatingIp(int ipId)
 	{
 		try 
@@ -742,11 +1066,20 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the DnsPtr of a FloatingIP
+	 * @param ipId Preferred FloatingIP
+	 * @param ip IP of the DnsPtr
+	 * @param dnsPtr The DnsPtr
+	 * @return The ApiAction
+	 */
 	public ApiAction changeFloatingIpDnsPtr(int ipId, String ip, String dnsPtr)
 	{
 		try 
 		{
-			return ((Response<GetFloatingIpActionResponse>) doRequest(retrofit.create(FloatingIpActionsService.class).changeDnsPtr(ipId, ip, dnsPtr))).body().getAction();
+			return ((Response<GetFloatingIpActionResponse>) doRequest(retrofit.create(FloatingIpActionsService.class)
+					.changeDnsPtr(ipId, new ChangeDnsPtrRequest.Builder().withIp(ip).withDnsPtr(dnsPtr).build())))
+					.body().getAction();
 		} 
 		catch (APIException e) 
 		{
@@ -755,6 +1088,10 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all your SshKeys
+	 * @return Array of SshKeys
+	 */
 	public SshKey[] getSshKeys()
 	{
 		try 
@@ -768,6 +1105,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all your SshKeys with a specific name
+	 * @param name Preferred Name
+	 * @return Array of SshKeys
+	 */
 	public SshKey[] getSshKeys(String name)
 	{
 		try 
@@ -781,6 +1123,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a specific SshKey
+	 * @param id Preferred Key
+	 * @return The SshKey
+	 */
 	public SshKey getSshKey(int id)
 	{
 		try 
@@ -794,11 +1141,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Create a SshLey
+	 * @param name Preferred Name
+	 * @param publicKey Preferred PublicKey
+	 * @return The SshKey
+	 */
 	public SshKey createSshKey(String name, String publicKey)
 	{
 		try 
 		{
-			return ((Response<GetSshKeyResponse>) doRequest(retrofit.create(SshKeysService.class).createSshKey(name, publicKey))).body().getSshKey();
+			return ((Response<GetSshKeyResponse>) doRequest(retrofit.create(SshKeysService.class)
+					.createSshKey(new CreateSshKeyRequest(name, publicKey)))).body().getSshKey();
 		} 
 		catch (APIException e) 
 		{
@@ -807,6 +1161,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the Name of a SshKey
+	 * @param id Preferred Key
+	 * @return The new SshKey-Object
+	 */
 	public SshKey changeSshKeyName(int id)
 	{
 		try 
@@ -820,11 +1179,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Change the Name of a SshKey
+	 * @param id Preferred Key
+	 * @param name New Name
+	 * @return The new SshKey-Object
+	 */
 	public SshKey changeSshKeyName(int id, String name)
 	{
 		try 
 		{
-			return ((Response<GetSshKeyResponse>) doRequest(retrofit.create(SshKeysService.class).changeName(id, name))).body().getSshKey();
+			return ((Response<GetSshKeyResponse>) doRequest(retrofit.create(SshKeysService.class)
+					.changeName(id, new ChangeNameRequest(name)))).body().getSshKey();
 		} 
 		catch (APIException e) 
 		{
@@ -833,6 +1199,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Delete a SshKey
+	 * @param id Preferred SshKey
+	 * @return If the SshKey was deleted
+	 */
 	public boolean deleteSshKey(int id)
 	{
 		try 
@@ -846,6 +1217,10 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all ServerTypes
+	 * @return Array of ServerTypes
+	 */
 	public ServerType[] getServerTypes()
 	{
 		try 
@@ -859,6 +1234,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all ServerTypes with a specific Name
+	 * @param name Preferred Name
+	 * @return Array of ServerTypes
+	 */
 	public ServerType[] getServerTypes(String name)
 	{
 		try 
@@ -872,6 +1252,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a specific ServerType
+	 * @param id Preferred ServerType
+	 * @return The ServerType
+	 */
 	public ServerType getServerType(int id)
 	{
 		try 
@@ -885,6 +1270,10 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Locations
+	 * @return Array of Locations
+	 */
 	public Location[] getLocations()
 	{
 		try 
@@ -898,6 +1287,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Locations with a specific Name
+	 * @param name Preferred Name
+	 * @return Array of Locations
+	 */
 	public Location[] getLocations(String name)
 	{
 		try 
@@ -911,6 +1305,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a specific Location
+	 * @param id Preferred Location
+	 * @return The Location
+	 */
 	public Location getLocation(int id)
 	{
 		try 
@@ -924,6 +1323,10 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Datacenters
+	 * @return Array of Datacenters
+	 */
 	public Datacenter[] getDatacenters()
 	{
 		try 
@@ -937,6 +1340,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Datacenters with a specific Name
+	 * @param name Preferred Name
+	 * @return Array of Datacenters
+	 */
 	public Datacenter[] getDatacenters(String name)
 	{
 		try 
@@ -950,6 +1358,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a specific Datacenter
+	 * @param id Preferred Datacenter
+	 * @return The Datacenter
+	 */
 	public Datacenter getDatacenter(int id)
 	{
 		try 
@@ -963,6 +1376,10 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Images
+	 * @return Array of Images
+	 */
 	public Image[] getImages()
 	{
 		try 
@@ -976,6 +1393,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Images sorted
+	 * @param sorting Preferred Sorting
+	 * @return Array of Images
+	 */
 	public Image[] getSortedImages(String sorting)
 	{
 		try 
@@ -989,6 +1411,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Images with a specific Type
+	 * @param type Preferred Type
+	 * @return Array of Images
+	 */
 	public Image[] getImagesByType(Image.Type type)
 	{
 		try 
@@ -1002,6 +1429,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Images bound to a Server
+	 * @param boundTo Preferred Server
+	 * @return Array of Images
+	 */
 	public Image[] getBoundImages(String boundTo)
 	{
 		try 
@@ -1015,6 +1447,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Images with a specific Name
+	 * @param name Preferred Name
+	 * @return Array of Images
+	 */
 	public Image[] getImages(String name)
 	{
 		try 
@@ -1028,6 +1465,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a specific Image
+	 * @param id Preferred Image
+	 * @return The Image
+	 */
 	public Image getImage(int id)
 	{
 		try 
@@ -1041,11 +1483,17 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Update an Image 
+	 * @param id Preferred Image
+	 * @return The new Image-Object
+	 */
 	public Image updateImage(int id)
 	{
 		try 
 		{
-			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).updateImage(id))).body().getImage();
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class)
+					.updateImage(id, new UpdateImageRequest.Builder().build()))).body().getImage();
 		} 
 		catch (APIException e) 
 		{
@@ -1054,11 +1502,19 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Update the Description of an Image
+	 * @param id Preferred Image
+	 * @param description The new Description
+	 * @return The new Image-Object
+	 */
 	public Image updateImageDescription(int id, String description)
 	{
 		try 
 		{
-			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).updateImageDescription(id, description))).body().getImage();
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class)
+					.updateImage(id, new UpdateImageRequest.Builder().withDescription(description).build()))).body()
+					.getImage();
 		} 
 		catch (APIException e) 
 		{
@@ -1067,11 +1523,18 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Update the Type of an Image
+	 * @param id Preferred Image
+	 * @param type The new Type
+	 * @return The new Image-Object
+	 */
 	public Image updateImageType(int id, Type type)
 	{
 		try 
 		{
-			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).updateImageType(id, type))).body().getImage();
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class)
+					.updateImage(id, new UpdateImageRequest.Builder().withType(type).build()))).body().getImage();
 		} 
 		catch (APIException e) 
 		{
@@ -1080,11 +1543,20 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Update the Description and Type of an Image
+	 * @param id Preferred Image
+	 * @param description The new Description
+	 * @param type The new Type
+	 * @return The new Image-Object
+	 */
 	public Image updateImage(int id, String description, Type type)
 	{
 		try 
 		{
-			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class).updateImage(id, description, type))).body().getImage();
+			return ((Response<GetImageResponse>) doRequest(retrofit.create(ImagesService.class)
+					.updateImage(id, new UpdateImageRequest.Builder().withDescription(description).withType(type)
+							.build()))).body().getImage();
 		} 
 		catch (APIException e) 
 		{
@@ -1093,6 +1565,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Delete an Image
+	 * @param id Preferred Image
+	 * @return If the Image was deleted
+	 */
 	public boolean deleteImage(int id)
 	{
 		try 
@@ -1106,6 +1583,10 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Isos
+	 * @return Array of Isos
+	 */
 	public Iso[] getIsos()
 	{
 		try 
@@ -1119,6 +1600,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Isos with a specific Name
+	 * @param name Preferred Name
+	 * @return Array of Isos
+	 */
 	public Iso[] getIsos(String name)
 	{
 		try 
@@ -1132,6 +1618,11 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get a specific Iso
+	 * @param id Preferred Iso
+	 * @return The Iso
+	 */
 	public Iso getIso(int id)
 	{
 		try 
@@ -1145,6 +1636,10 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Get all Pricings
+	 * @return The Pricings
+	 */
 	public Pricing getPricing()
 	{
 		try 
@@ -1158,6 +1653,12 @@ public class HetznerCloud
 		}
 	}
 	
+	/**
+	 * Do a Request to the API
+	 * @param call The call you want to execute
+	 * @return The Response
+	 * @throws APIException Exception when Call failed
+	 */
 	public Response<?> doRequest(Call<?> call) throws APIException
 	{
 		try 
@@ -1187,6 +1688,12 @@ public class HetznerCloud
 		return null;
 	}
 	
+	/**
+	 * Use this Builder to create your Object.
+	 * You can provide your Token, for access to the API.
+	 * @author Katzen48
+	 * @since 1.0
+	 */
 	public static class Builder
 	{
 		private String bearerToken;

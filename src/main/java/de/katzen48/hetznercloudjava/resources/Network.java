@@ -10,14 +10,28 @@ public class Network
 	private int[] floatingIps;
 	
 	
+	/**
+	 * Get the IPv4
+	 * @return IPv4
+	 */
 	public Ipv4Network getIpv4() 
 	{
 		return ipv4;
 	}
+	
+	/**
+	 * Get the IPv6
+	 * @return IPv6
+	 */
 	public Ipv6Network getIpv6() 
 	{
 		return ipv6;
 	}
+	
+	/**
+	 * Get all FloatingIps
+	 * @return Array of IDs
+	 */
 	public int[] getFloatingIps()
 	{
 		return floatingIps;

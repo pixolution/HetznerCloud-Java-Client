@@ -2,8 +2,10 @@ package de.katzen48.hetznercloudjava.services;
 
 import de.katzen48.hetznercloudjava.reponses.images.GetImageResponse;
 import de.katzen48.hetznercloudjava.reponses.images.GetImagesResponse;
+import de.katzen48.hetznercloudjava.requests.UpdateImageRequest;
 import de.katzen48.hetznercloudjava.resources.Image.Type;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
@@ -63,19 +65,7 @@ public interface ImagesService
 	
 	@Headers({ "Accept: application/json" })
 	@PUT("images/{id}")
-	public Call<GetImageResponse> updateImage(@Path("id") int id);
-	
-	@Headers({ "Accept: application/json" })
-	@PUT("images/{id}")
-	public Call<GetImageResponse> updateImageDescription(@Path("id") int id, @Query("description") String description);
-	
-	@Headers({ "Accept: application/json" })
-	@PUT("images/{id}")
-	public Call<GetImageResponse> updateImageType(@Path("id") int id, @Query("type") Type type);
-	
-	@Headers({ "Accept: application/json" })
-	@PUT("images/{id}")
-	public Call<GetImageResponse> updateImage(@Path("id") int id, @Query("description") String description, @Query("type") Type type);
+	public Call<GetImageResponse> updateImage(@Path("id") int id, @Body UpdateImageRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@DELETE("images/{id}")

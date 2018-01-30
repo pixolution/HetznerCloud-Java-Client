@@ -2,7 +2,10 @@ package de.katzen48.hetznercloudjava.services;
 
 import de.katzen48.hetznercloudjava.reponses.sshkeys.GetSshKeyResponse;
 import de.katzen48.hetznercloudjava.reponses.sshkeys.GetSshKeysResponse;
+import de.katzen48.hetznercloudjava.requests.ChangeNameRequest;
+import de.katzen48.hetznercloudjava.requests.CreateSshKeyRequest;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
@@ -27,7 +30,7 @@ public interface SshKeysService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("ssh_keys")
-	public Call<GetSshKeyResponse> createSshKey(@Query("name") String name, @Query("public_key") String publicKey);
+	public Call<GetSshKeyResponse> createSshKey(@Body CreateSshKeyRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@PUT("ssh_keys/{id}")
@@ -35,7 +38,7 @@ public interface SshKeysService
 	
 	@Headers({ "Accept: application/json" })
 	@PUT("ssh_keys/{id}")
-	public Call<GetSshKeyResponse> changeName(@Path("id") int id, @Query("name") String name);
+	public Call<GetSshKeyResponse> changeName(@Path("id") int id, @Body ChangeNameRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@DELETE("ssh_keys/{id}")

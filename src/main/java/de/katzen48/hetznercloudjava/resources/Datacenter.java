@@ -10,42 +10,51 @@ public class Datacenter
 	private Location location;
 	@SerializedName("server_types")
 	private ServerTypes serverTypes;
-	private int recommendation;
 	
 	
+	/**
+	 * Get the ID of this Datacenter
+	 * @return ID
+	 */
 	public int getId()
 	{
 		return id;
 	}
-
-
+	
+	/**
+	 * Get the Name of this Datacenter
+	 * @return Name
+	 */
 	public String getName() 
 	{
 		return name;
 	}
 
-
+	/**
+	 * Get the Description of this Datacenter
+	 * @return
+	 */
 	public String getDescription() 
 	{
 		return description;
 	}
 
-
+	/**
+	 * Get the Location of this Datacenter
+	 * @return Location
+	 */
 	public Location getLocation() 
 	{
 		return location;
 	}
 
-
+	/**
+	 * Get all available ServerTypes
+	 * @return Array of ServerTypes
+	 */
 	public ServerTypes getServerTypes()
 	{
 		return serverTypes;
-	}
-
-
-	public int getRecommendation() 
-	{
-		return recommendation;
 	}
 
 

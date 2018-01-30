@@ -6,14 +6,20 @@ import de.katzen48.hetznercloudjava.reponses.server.actions.RebuildServerRespons
 import de.katzen48.hetznercloudjava.reponses.server.actions.ResetPasswordResponse;
 import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionResponse;
 import de.katzen48.hetznercloudjava.reponses.server.actions.ServerActionsResponse;
-import de.katzen48.hetznercloudjava.resources.Image.Type;
+import de.katzen48.hetznercloudjava.requests.AttachServerIsoRequest;
+import de.katzen48.hetznercloudjava.requests.ChangeDnsPtrRequest;
+import de.katzen48.hetznercloudjava.requests.ChangeServerTypeRequest;
+import de.katzen48.hetznercloudjava.requests.CreateServerImageRequest;
+import de.katzen48.hetznercloudjava.requests.EnableServerBackupRequest;
+import de.katzen48.hetznercloudjava.requests.EnableServerRescueModeRequest;
+import de.katzen48.hetznercloudjava.requests.RebuildServerRequest;
 import de.katzen48.hetznercloudjava.resources.ApiAction.Status;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public interface ServerActionsService 
 {
@@ -63,47 +69,20 @@ public interface ServerActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/enable_rescue")
-	public Call<EnableRescueModeResponse> enableRescueMode(@Path("id") int id);
+	public Call<EnableRescueModeResponse> enableRescueMode(@Path("id") int id, @Body EnableServerRescueModeRequest request);
 	
-	@Headers({ "Accept: application/json" })
-	@POST("servers/{id}/actions/enable_rescue")
-	public Call<EnableRescueModeResponse> enableRescueMode(@Path("id") int id, @Query("type") String osType);
-	
-	@Headers({ "Accept: application/json" })
-	@POST("servers/{id}/actions/enable_rescue")
-	public Call<EnableRescueModeResponse> enableRescueMode(@Path("id") int id, @Query("ssh_keys") int[] sshKeys);
-	
-	@Headers({ "Accept: application/json" })
-	@POST("servers/{id}/actions/enable_rescue")
-	public Call<EnableRescueModeResponse> enableRescueMode(@Path("id") int id, @Query("type") String osType, @Query("ssh_keys") int[] sshKeys);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/create_image")
-	public Call<CreateImageResponse> createImage(@Path("id") int id);
-	
-	@Headers({ "Accept: application/json" })
-	@POST("servers/{id}/actions/create_image")
-	public Call<CreateImageResponse> createImage(@Path("id") int id, @Query("description") String description);
-	
-	@Headers({ "Accept: application/json" })
-	@POST("servers/{id}/actions/create_image")
-	public Call<CreateImageResponse> createImage(@Path("id") int id, @Query("type") Type type);
-	
-	@Headers({ "Accept: application/json" })
-	@POST("servers/{id}/actions/create_image")
-	public Call<CreateImageResponse> createImage(@Path("id") int id, @Query("description") String description, @Query("type") Type type);
+	public Call<CreateImageResponse> createImage(@Path("id") int id, @Body CreateServerImageRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/rebuild")
-	public Call<RebuildServerResponse> rebuildServer(@Path("id") int id, @Query("image") int image);
+	public Call<RebuildServerResponse> rebuildServer(@Path("id") int id, @Body RebuildServerRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/change_type")
-	public Call<ServerActionResponse> changeServerType(@Path("id") int id, @Query("server_type") String type);
-	
-	@Headers({ "Accept: application/json" })
-	@POST("servers/{id}/actions/change_type")
-	public Call<ServerActionResponse> changeServerType(@Path("id") int id, @Query("server_type") String type, @Query("upgrade_disk") boolean upgradeDisk);
+	public Call<ServerActionResponse> changeServerType(@Path("id") int id, @Body ChangeServerTypeRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/enable_backup")
@@ -111,7 +90,7 @@ public interface ServerActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/enable_backup")
-	public Call<ServerActionResponse> enableBackup(@Path("id") int id, @Query("backup_window") String backupWindow);
+	public Call<ServerActionResponse> enableBackup(@Path("id") int id, @Body EnableServerBackupRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/disable_backup")
@@ -119,7 +98,7 @@ public interface ServerActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/attach_iso")
-	public Call<ServerActionResponse> attachIso(@Path("id") int id, @Query("iso") int iso);
+	public Call<ServerActionResponse> attachIso(@Path("id") int id, @Body AttachServerIsoRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/detach_iso")
@@ -127,5 +106,5 @@ public interface ServerActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("servers/{id}/actions/change_dns_ptr")
-	public Call<ServerActionResponse> changeDnsPtr(@Path("id") int id, @Query("ip") String ip, @Query("dns_ptr") String ptr);
+	public Call<ServerActionResponse> changeDnsPtr(@Path("id") int id, @Body ChangeDnsPtrRequest request);
 }

@@ -2,7 +2,10 @@ package de.katzen48.hetznercloudjava.services;
 
 import de.katzen48.hetznercloudjava.reponses.floatingips.actions.GetFloatingIpActionResponse;
 import de.katzen48.hetznercloudjava.reponses.floatingips.actions.GetFloatingIpActionsResponse;
+import de.katzen48.hetznercloudjava.requests.AssignFloatingIpToServerRequest;
+import de.katzen48.hetznercloudjava.requests.ChangeDnsPtrRequest;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -25,7 +28,7 @@ public interface FloatingIpActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("floating_ips/{id}/actions/assign")
-	public Call<GetFloatingIpActionResponse> assignToServer(@Path("id") int ipId, @Query("server") int serverId);
+	public Call<GetFloatingIpActionResponse> assignToServer(@Path("id") int ipId, @Body AssignFloatingIpToServerRequest request);
 	
 	@Headers({ "Accept: application/json" })
 	@POST("floating_ips/{id}/actions/unassign")
@@ -33,5 +36,5 @@ public interface FloatingIpActionsService
 	
 	@Headers({ "Accept: application/json" })
 	@POST("floating_ips/{id}/actions/change_dns_ptr")
-	public Call<GetFloatingIpActionResponse> changeDnsPtr(@Path("id") int ipId, @Query("ip") String ip, @Query("dns_ptr") String dnsPtr);
+	public Call<GetFloatingIpActionResponse> changeDnsPtr(@Path("id") int ipId, @Body ChangeDnsPtrRequest request);
 }
