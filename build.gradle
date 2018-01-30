@@ -34,6 +34,11 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
 }
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
 javadoc {
     failOnError  false
     source = sourceSets.main.allJava
