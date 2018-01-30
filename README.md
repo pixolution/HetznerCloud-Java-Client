@@ -1,4 +1,5 @@
 # Java Client for HetznerCloud [![](https://jitpack.io/v/Katzen48/HetznerCloud-Java-Client.svg)](https://jitpack.io/#Katzen48/HetznerCloud-Java-Client)
+----------
 ## **Installation**
 ### **Maven**
 Just put this into your pom.xml:
@@ -46,7 +47,7 @@ This will get us the Names of all available Servers.
 
 
 ### **Docs**
-You can find the docs [here](https://jitpack.io/com/github/katzen48/HetznerCloud-Java-Client/master-snapshot/javadoc/).
+You can find the docs [here](https://jitpack.io/com/github/katzen48/HetznerCloud-Java-Client/master-SNAPSHOT/javadoc/).
 They will be updated automaticly, so don't worry about it.
 
 ----------
