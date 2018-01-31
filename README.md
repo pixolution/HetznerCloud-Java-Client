@@ -1,10 +1,9 @@
 # Java Client for HetznerCloud [![](https://jitpack.io/v/Katzen48/HetznerCloud-Java-Client.svg)](https://jitpack.io/#Katzen48/HetznerCloud-Java-Client)
-----------
 ## **Installation**
 ### **Maven**
 Just put this into your pom.xml:
 ```xml
-<groupId>com.github.katzen48</groupId>
+<groupId>de.katzen48</groupId>
 <artifactId>HetznerCloud-Java-Client</artifactId>
 <version>VERSION</version>
   
@@ -21,7 +20,7 @@ repositories {
 }
 
 dependencies {
-	compile group: 'com.github.katzen48', name: 'HetznerCloud-Java-Client', version: 'VERSION'
+	compile group: 'de.katzen48', name: 'HetznerCloud-Java-Client', version: 'VERSION'
 }
 ```
 ----------
